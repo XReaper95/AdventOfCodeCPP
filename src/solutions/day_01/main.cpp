@@ -12,11 +12,12 @@ protected:
 
         std::string line;
         std::fstream file = inputFileStream(1);
+        CalibrationValueFinder finder {false};
 
         while (std::getline(file, line))
         {
-            CalibrationValueFinder finder {line, false};
-            sum += finder.GetResult();
+            std::stringstream ss {line};
+            sum += finder.GetResultAndReset(ss);
         }
 
         return sum;
@@ -28,11 +29,12 @@ protected:
 
         std::string line;
         std::fstream file = inputFileStream(1);
+        CalibrationValueFinder finder {true};
 
         while (std::getline(file, line))
         {
-            CalibrationValueFinder finder {line, true};
-            sum += finder.GetResult();
+            std::stringstream ss {line};
+            sum += finder.GetResultAndReset(ss);
         }
 
         return sum;

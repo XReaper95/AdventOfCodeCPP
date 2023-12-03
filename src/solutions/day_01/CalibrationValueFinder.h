@@ -22,17 +22,17 @@ private:
 class CalibrationValueFinder
 {
 public:
-    explicit CalibrationValueFinder(const std::string& line, bool useNames);
+    explicit CalibrationValueFinder(bool useNames);
 
-    int GetResult();
+    int GetResultAndReset(std::stringstream& ss);
 private:
     bool m_useNames;
-    std::stringstream m_stream;
     std::string m_compareBuffer;
+    std::string m_backupBuffer;
     CalibrationResult m_result;
 
     bool ProcessPossibleDigit(char character);
-    void SearchForName(char character);
+    void SearchForName(char character, std::stringstream& ss);
 };
 
 #endif //DIGIT_FINDER_H

@@ -48,24 +48,33 @@ int CalibrationResult::Get()
 
 }
 
-CalibrationValueFinder::CalibrationValueFinder(const std::string& line, const bool useNames)
-    : m_useNames{useNames}, m_stream{line}
+CalibrationValueFinder::CalibrationValueFinder(const bool useNames)
+    : m_useNames{useNames}
 {
+    m_compareBuffer.reserve(2);
+    m_backupBuffer.reserve(3);
 }
 
 
-int CalibrationValueFinder::GetResult()
+int CalibrationValueFinder::GetResultAndReset(std::stringstream& ss)
 {
     char c;
-    while(m_stream >> c)
+    while(ss >> c)
     {
         if (!ProcessPossibleDigit(c) && m_useNames)
         {
-            SearchForName(c);
+            SearchForName(c, ss);
         }
     }
 
-    return m_result.Get();
+    const int result =  m_result.Get();
+
+    //reset state
+    m_compareBuffer.clear();
+    m_backupBuffer.clear();
+    m_result = CalibrationResult{};
+
+    return result;
 }
 
 bool CalibrationValueFinder::ProcessPossibleDigit(const char character)
@@ -80,7 +89,7 @@ bool CalibrationValueFinder::ProcessPossibleDigit(const char character)
     return false;
 }
 
-void CalibrationValueFinder::SearchForName(const char character)
+void CalibrationValueFinder::SearchForName(const char character, std::stringstream& ss)
 {
     m_compareBuffer += character;
     if (m_compareBuffer.size() == 2)
@@ -88,27 +97,27 @@ void CalibrationValueFinder::SearchForName(const char character)
         if (digitsByName.contains(m_compareBuffer))
         {
             char fromStream;
-            std::string backupBuffer;
+            m_backupBuffer.clear();
 
             const auto [restOfName, digit] = digitsByName.at(m_compareBuffer);
             for (const auto c: restOfName)
             {
-                m_stream >> fromStream;
-                backupBuffer += fromStream;
+                ss >> fromStream;
+                m_backupBuffer += fromStream;
 
                 if (ProcessPossibleDigit(fromStream)) return;
                 if (c != fromStream)
                 {
                     m_compareBuffer.erase(0, 1);
-                    for (const auto backupChar: backupBuffer)
-                    {
-                        m_stream.putback(backupChar);
-                    }
+                    std::ranges::for_each(
+                        m_backupBuffer,
+                        [&ss](const char backupChar){ss.putback(backupChar);}
+                        );
                     return;
                 }
             }
             m_result.Update(digit);
-            m_stream.putback(fromStream);
+            ss.putback(fromStream);
         }
 
         m_compareBuffer.erase(0, 1);
