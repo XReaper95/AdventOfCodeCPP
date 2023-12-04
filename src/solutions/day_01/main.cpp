@@ -3,37 +3,40 @@
 #include "SolutionBase.h"
 #include "CalibrationValueFinder.h"
 
-class Day01 final: public SolutionBase
+class Day01 final : public SolutionBase
 {
 protected:
-    int Part1() override
+    int DayNum() override
     {
-        int sum {};
+        return 1;
+    }
+
+    int Part1(std::fstream& inputFileStream) override
+    {
+        int sum{};
 
         std::string line;
-        std::fstream file = inputFileStream(1);
-        CalibrationValueFinder finder {false};
+        CalibrationValueFinder finder{false};
 
-        while (std::getline(file, line))
+        while (std::getline(inputFileStream, line))
         {
-            std::stringstream ss {line};
+            std::stringstream ss{line};
             sum += finder.GetResultAndReset(ss);
         }
 
         return sum;
     }
 
-    int Part2() override
+    int Part2(std::fstream& inputFileStream) override
     {
-        int sum {};
+        int sum{};
 
         std::string line;
-        std::fstream file = inputFileStream(1);
-        CalibrationValueFinder finder {true};
+        CalibrationValueFinder finder{true};
 
-        while (std::getline(file, line))
+        while (std::getline(inputFileStream, line))
         {
-            std::stringstream ss {line};
+            std::stringstream ss{line};
             sum += finder.GetResultAndReset(ss);
         }
 
@@ -41,9 +44,7 @@ protected:
     }
 };
 
-
 int main()
 {
-    Day01().Solve(1);
+    Day01().Run(142, 281);
 }
-

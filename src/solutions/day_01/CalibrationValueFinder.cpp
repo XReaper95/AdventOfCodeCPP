@@ -13,7 +13,7 @@ struct DigitMeta
     int digit;
 };
 
-static std::unordered_map<std::string, DigitMeta> digitsByName {
+static std::unordered_map<std::string, DigitMeta> digitsByName{
     {"on", {"e", 1}},
     {"tw", {"o", 2}},
     {"th", {"ree", 3}},
@@ -30,7 +30,8 @@ void CalibrationResult::Update(const int digit)
     if (m_firstDigit == 0)
     {
         m_firstDigit = digit;
-    } else
+    }
+    else
     {
         m_secondDigit = digit;
     }
@@ -45,7 +46,6 @@ int CalibrationResult::Get()
 {
     if (m_secondDigit == 0) m_secondDigit = m_firstDigit;
     return m_firstDigit * 10 + m_secondDigit;
-
 }
 
 CalibrationValueFinder::CalibrationValueFinder(const bool useNames)
@@ -59,7 +59,7 @@ CalibrationValueFinder::CalibrationValueFinder(const bool useNames)
 int CalibrationValueFinder::GetResultAndReset(std::stringstream& ss)
 {
     char c;
-    while(ss >> c)
+    while (ss >> c)
     {
         if (!ProcessPossibleDigit(c) && m_useNames)
         {
@@ -67,7 +67,7 @@ int CalibrationValueFinder::GetResultAndReset(std::stringstream& ss)
         }
     }
 
-    const int result =  m_result.Get();
+    const int result = m_result.Get();
 
     //reset state
     m_compareBuffer.clear();
@@ -100,7 +100,7 @@ void CalibrationValueFinder::SearchForName(const char character, std::stringstre
             m_backupBuffer.clear();
 
             const auto [restOfName, digit] = digitsByName.at(m_compareBuffer);
-            for (const auto c: restOfName)
+            for (const auto c : restOfName)
             {
                 ss >> fromStream;
                 m_backupBuffer += fromStream;
@@ -111,8 +111,8 @@ void CalibrationValueFinder::SearchForName(const char character, std::stringstre
                     m_compareBuffer.erase(0, 1);
                     std::ranges::for_each(
                         m_backupBuffer,
-                        [&ss](const char backupChar){ss.putback(backupChar);}
-                        );
+                        [&ss](const char backupChar) { ss.putback(backupChar); }
+                    );
                     return;
                 }
             }
