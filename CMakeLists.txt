@@ -17,6 +17,9 @@ link_libraries(COMMON_LIB)
 set(SOLUTION_LIST
         day_01
         day_02
+        day_03
+        day_04
+        day_05
 )
 
 foreach (solution ${SOLUTION_LIST})
