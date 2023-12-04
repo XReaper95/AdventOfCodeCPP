@@ -1,5 +1,3 @@
-#include <fstream>
-
 #include "SolutionBase.h"
 
 class Day02 final : public SolutionBase
@@ -7,7 +5,7 @@ class Day02 final : public SolutionBase
 protected:
     int DayNum() override
     {
-        return 1;
+        return 2;
     };
 
     int Part1(std::fstream& inputFileStream) override
