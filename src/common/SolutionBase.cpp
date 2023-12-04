@@ -40,15 +40,15 @@ void SolutionBase::SolveExample(const int exampleNum, const int expectedResult, 
 {
     std::fstream exampleStream = getFileStream(exampleNum);
 
-    if (int result = (this->*partFunc)(exampleStream); result > 0)
+    if (int result = (this->*partFunc)(exampleStream); result >= 0)
     {
         if (result == expectedResult)
         {
-            fmt::println("Day {}, example {} result: {}. OK", DayNum(), exampleNum, result);
+            fmt::println("Day {}, example {} result: {} (OK)", DayNum(), exampleNum, result);
         }
         else
         {
-            fmt::println(stderr, "ERROR day {} example {}, expected {}, received {}",
+            fmt::println(stderr, "ERROR day {} example {}, expected: {} received: {}",
                          DayNum(), exampleNum, expectedResult, result);
             std::exit(1);
         }
@@ -70,7 +70,7 @@ std::fstream SolutionBase::getFileStream(const int exampleNum)
     }
 
     std::string fileName;
-    if (exampleNum > 0)
+    if (exampleNum >= 0)
     {
         fileName = fmt::format("example_{}.txt", exampleNum);
     }
