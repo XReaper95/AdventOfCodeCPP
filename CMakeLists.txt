@@ -9,7 +9,7 @@ add_subdirectory(libs/fmt-10.1.1) # FMT
 # Add solutions manually here
 set(SOLUTION_LIST
         day_01
-        # day_02
+        day_02
 )
 
 add_library(COMMON_LIB INTERFACE src/common/SolutionBase.h)
