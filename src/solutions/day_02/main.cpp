@@ -59,16 +59,18 @@ protected:
     int Part2(std::ifstream& inputFile) override
     {
         std::string tempBuf;
-        std::unordered_map<std::string, int> minimumSet;
+        int r{}, g{}, b{};
         int powerSum{};
 
         while (inputFile >> tempBuf)
         {
             if (tempBuf == "Game")
             {
-                if (!minimumSet.empty()) powerSum += extractMinimunSetPower(minimumSet);
-                skipToSemicolon(inputFile);
-                continue;
+                inputFile >> tempBuf; // skip game number
+                inputFile >> tempBuf; // get first color number
+
+                powerSum += r * g * b;
+                r = g = b = 0;
             }
 
             if (std::isdigit(tempBuf[0]))
@@ -81,17 +83,13 @@ protected:
                     tempBuf.pop_back();
                 }
 
-                minimumSet.insert({tempBuf, colorCount});
-                if (colorCount > minimumSet[tempBuf])
-                {
-                    minimumSet[tempBuf] = colorCount;
-                }
+                if (tempBuf == "red"   && colorCount > r) r = colorCount;
+                if (tempBuf == "green" && colorCount > g) g = colorCount;
+                if (tempBuf == "blue"  && colorCount > b) b = colorCount;
             }
         }
 
-        powerSum += extractMinimunSetPower(minimumSet);
-
-        return powerSum;
+        return powerSum + r * g * b;
     }
 
     static bool endsInPunctuacion(const std::string_view text)
@@ -102,25 +100,6 @@ protected:
     static void skipToNextLine(std::ifstream& ifs)
     {
         ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-    static void skipToSemicolon(std::ifstream& ifs)
-    {
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), ':');
-    }
-
-    static int extractMinimunSetPower(std::unordered_map<std::string, int>& minimumSet)
-    {
-        const int result = std::accumulate(
-            minimumSet.begin(),
-            minimumSet.end(),
-            1,
-            [](const int previous, const auto& p) { return previous * p.second; }
-        );
-
-        minimumSet.clear();
-
-        return result;
     }
 };
 
