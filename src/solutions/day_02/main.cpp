@@ -1,4 +1,3 @@
-#include <functional>
 #include <numeric>
 #include <unordered_map>
 #include <fmt/core.h>
@@ -15,94 +14,113 @@ protected:
 
     int Part1(std::fstream& inputFileStream) override
     {
-        std::unordered_map<std::string, int> colorLimits {
+        std::unordered_map<std::string, int> colorLimits{
             {"red", 12}, {"green", 13}, {"blue", 14}
         };
 
-        std::string line;
-        int validGamesSum {};
+        int validGamesSum{};
         std::string tempBuf;
         int currGame{};
 
-        while (std::getline(inputFileStream, line))
+        while (inputFileStream >> tempBuf)
         {
-            std::stringstream ss{line};
-            bool isGameValid = true;
-
-            ss >> tempBuf; // game word
-            ss >> currGame;
-
-            while (ss >> tempBuf)
+            if (tempBuf == "Game")
             {
-                if (std::isdigit(tempBuf[0]))
+                if (currGame > 0)
                 {
-                    const int colorCount = std::stoi(tempBuf);
-                    ss >> tempBuf;
-                    std::string color;
-                    std::ranges::remove_copy_if( // clear punctuation
-                        tempBuf,
-                        std::back_inserter(color),
-                        [](const int c) { return std::ispunct(c);}
-                    );
-
-                    if (colorCount > colorLimits[color]) {
-                        isGameValid = false;
-                        break;
-                    }
+                    validGamesSum += currGame;
                 }
+                inputFileStream >> currGame;
             }
 
-            if (isGameValid) validGamesSum += currGame;
+            if (std::isdigit(tempBuf[0]))
+            {
+                const int colorCount = std::stoi(tempBuf);
+                inputFileStream >> tempBuf;
+
+                if (endsInPunctuacion(tempBuf))
+                {
+                    tempBuf.pop_back();
+                }
+
+                if (colorCount > colorLimits[tempBuf])
+                {
+                    currGame = -1;
+                    skipToNextLine(inputFileStream);
+                }
+            }
         }
+
+        if (currGame > 0) validGamesSum += currGame;
 
         return validGamesSum;
     }
 
     int Part2(std::fstream& inputFileStream) override
     {
-        std::string line;
-        int powerSum {};
         std::string tempBuf;
+        std::unordered_map<std::string, int> minimumSet;
+        int powerSum{};
 
-        while (std::getline(inputFileStream, line))
+        while (inputFileStream >> tempBuf)
         {
-            std::stringstream ss{line};
-
-            std::unordered_map<std::string, int> minimumSet;
-            minimumSet.reserve(3);
-
-            ss >> tempBuf; // game word
-            ss >> tempBuf; // current game, not needed here
-
-            while (ss >> tempBuf)
+            if (tempBuf == "Game")
             {
-                if (std::isdigit(tempBuf[0]))
-                {
-                    const int colorCount = std::stoi(tempBuf);
-                    ss >> tempBuf;
-                    std::string color;
-                    std::ranges::remove_copy_if( // clear punctuation
-                        tempBuf,
-                        std::back_inserter(color),
-                        [](const int c) { return std::ispunct(c);}
-                    );
+                if (!minimumSet.empty()) powerSum += extractMinimunSetPower(minimumSet);
+                skipToSemicolon(inputFileStream);
+                continue;
+            }
 
-                    minimumSet.insert({color, colorCount});
-                    if (colorCount > minimumSet[color])
-                    {
-                        minimumSet[color] = colorCount;
-                    }
+            if (std::isdigit(tempBuf[0]))
+            {
+                const int colorCount = std::stoi(tempBuf);
+                inputFileStream >> tempBuf;
+
+                if (endsInPunctuacion(tempBuf))
+                {
+                    tempBuf.pop_back();
+                }
+
+                minimumSet.insert({tempBuf, colorCount});
+                if (colorCount > minimumSet[tempBuf])
+                {
+                    minimumSet[tempBuf] = colorCount;
                 }
             }
-            powerSum += std::accumulate(
-                minimumSet.begin(),
-                minimumSet.end(),
-                1,
-                [](const int previous, const auto& p) { return previous * p.second; }
-                );
         }
 
+        powerSum += extractMinimunSetPower(minimumSet);
+
         return powerSum;
+    }
+
+    static bool endsInPunctuacion(const std::string_view text)
+    {
+        return text[text.size() - 1] == ',' || text[text.size() - 1] == ';';
+    }
+
+    static void skipToNextLine(std::fstream& fs)
+    {
+        fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    static void skipToSemicolon(std::fstream& fs)
+    {
+        fs.ignore(std::numeric_limits<std::streamsize>::max(), ':');
+    }
+
+    static int extractMinimunSetPower(std::unordered_map<std::string, int>& minimumSet)
+    {
+        const int result = std::accumulate(
+            minimumSet.begin(),
+            minimumSet.end(),
+            1,
+            [](const int previous, const auto& p) { return previous * p.second; }
+        );
+
+        minimumSet.clear();
+
+        return result;
     }
 };
 
@@ -110,4 +128,3 @@ int main()
 {
     Day02().Run(8, 2286);
 }
-
