@@ -19,7 +19,7 @@ void SolutionBase::Run(const int example1Result, const int example2Result)
 
 void SolutionBase::SolveInput(const int partNum, const SolutionPartFunction partFunc)
 {
-    std::fstream inputStream = getFileStream(-1);
+    std::ifstream inputStream = getFileStream(-1);
 
     const auto begin1 = std::chrono::high_resolution_clock::now();
     int result = (this->*partFunc)(inputStream);
@@ -38,7 +38,7 @@ void SolutionBase::SolveInput(const int partNum, const SolutionPartFunction part
 
 void SolutionBase::SolveExample(const int exampleNum, const int expectedResult, const SolutionPartFunction partFunc)
 {
-    std::fstream exampleStream = getFileStream(exampleNum);
+    std::ifstream exampleStream = getFileStream(exampleNum);
 
     if (int result = (this->*partFunc)(exampleStream); result >= 0)
     {
@@ -59,7 +59,7 @@ void SolutionBase::SolveExample(const int exampleNum, const int expectedResult, 
     }
 }
 
-std::fstream SolutionBase::getFileStream(const int exampleNum)
+std::ifstream SolutionBase::getFileStream(const int exampleNum)
 {
     std::string dayStr = std::to_string(DayNum());
 
@@ -87,5 +87,5 @@ std::fstream SolutionBase::getFileStream(const int exampleNum)
         std::exit(1);
     }
 
-    return std::fstream{inputPath};
+    return std::ifstream{inputPath};
 }

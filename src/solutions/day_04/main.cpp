@@ -8,12 +8,12 @@ protected:
         return 4;
     };
 
-    int Part1(std::fstream& inputFileStream) override
+    int Part1(std::ifstream& inputFile) override
     {
         return -1;
     }
 
-    int Part2(std::fstream& inputFileStream) override
+    int Part2(std::ifstream& inputFile) override
     {
         return -1;
     }

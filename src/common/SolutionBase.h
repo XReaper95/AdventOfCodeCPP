@@ -16,15 +16,15 @@ public:
 
 protected:
     virtual int DayNum() = 0;
-    virtual int Part1(std::fstream& inputFileStream) = 0;
-    virtual int Part2(std::fstream& inputFileStream) = 0;
+    virtual int Part1(std::ifstream& inputFile) = 0;
+    virtual int Part2(std::ifstream& inputFile) = 0;
 
 private:
-    using SolutionPartFunction = int(SolutionBase::*)(std::fstream&);
+    using SolutionPartFunction = int(SolutionBase::*)(std::ifstream&);
 
     void SolveInput(int partNum, SolutionPartFunction partFunc);
     void SolveExample(int exampleNum, int expectedResult, SolutionPartFunction partFunc);
-    std::fstream getFileStream(int exampleNum);
+    std::ifstream getFileStream(int exampleNum);
 };
 
 #endif //SOLUTION_H

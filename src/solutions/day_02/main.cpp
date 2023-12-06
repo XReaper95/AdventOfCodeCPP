@@ -12,7 +12,7 @@ protected:
         return 2;
     };
 
-    int Part1(std::fstream& inputFileStream) override
+    int Part1(std::ifstream& inputFile) override
     {
         std::unordered_map<std::string, int> colorLimits{
             {"red", 12}, {"green", 13}, {"blue", 14}
@@ -22,7 +22,7 @@ protected:
         std::string tempBuf;
         int currGame{};
 
-        while (inputFileStream >> tempBuf)
+        while (inputFile >> tempBuf)
         {
             if (tempBuf == "Game")
             {
@@ -30,13 +30,13 @@ protected:
                 {
                     validGamesSum += currGame;
                 }
-                inputFileStream >> currGame;
+                inputFile >> currGame;
             }
 
             if (std::isdigit(tempBuf[0]))
             {
                 const int colorCount = std::stoi(tempBuf);
-                inputFileStream >> tempBuf;
+                inputFile >> tempBuf;
 
                 if (endsInPunctuacion(tempBuf))
                 {
@@ -46,7 +46,7 @@ protected:
                 if (colorCount > colorLimits[tempBuf])
                 {
                     currGame = -1;
-                    skipToNextLine(inputFileStream);
+                    skipToNextLine(inputFile);
                 }
             }
         }
@@ -56,25 +56,25 @@ protected:
         return validGamesSum;
     }
 
-    int Part2(std::fstream& inputFileStream) override
+    int Part2(std::ifstream& inputFile) override
     {
         std::string tempBuf;
         std::unordered_map<std::string, int> minimumSet;
         int powerSum{};
 
-        while (inputFileStream >> tempBuf)
+        while (inputFile >> tempBuf)
         {
             if (tempBuf == "Game")
             {
                 if (!minimumSet.empty()) powerSum += extractMinimunSetPower(minimumSet);
-                skipToSemicolon(inputFileStream);
+                skipToSemicolon(inputFile);
                 continue;
             }
 
             if (std::isdigit(tempBuf[0]))
             {
                 const int colorCount = std::stoi(tempBuf);
-                inputFileStream >> tempBuf;
+                inputFile >> tempBuf;
 
                 if (endsInPunctuacion(tempBuf))
                 {
@@ -99,14 +99,14 @@ protected:
         return text[text.size() - 1] == ',' || text[text.size() - 1] == ';';
     }
 
-    static void skipToNextLine(std::fstream& fs)
+    static void skipToNextLine(std::ifstream& ifs)
     {
-        fs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
-    static void skipToSemicolon(std::fstream& fs)
+    static void skipToSemicolon(std::ifstream& ifs)
     {
-        fs.ignore(std::numeric_limits<std::streamsize>::max(), ':');
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), ':');
     }
 
     static int extractMinimunSetPower(std::unordered_map<std::string, int>& minimumSet)

@@ -3,26 +3,19 @@
 //
 #include "CalibrationValueFinder.h"
 
-#include <algorithm>
 #include <string>
 #include <unordered_map>
 
 struct DigitMeta
 {
     std::string restOfName;
-    int digit;
+    int digit{};
 };
 
-static std::unordered_map<std::string, DigitMeta> digitsByName{
-    {"on", {"e", 1}},
-    {"tw", {"o", 2}},
-    {"th", {"ree", 3}},
-    {"fo", {"ur", 4}},
-    {"fi", {"ve", 5}},
-    {"si", {"x", 6}},
-    {"se", {"ven", 7}},
-    {"ei", {"ght", 8}},
-    {"ni", {"ne", 9}}
+constexpr int numDigits = 9;
+
+static const char* namedDigits[numDigits] = {
+    "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
 };
 
 void CalibrationResult::Update(const int digit)
@@ -42,39 +35,37 @@ void CalibrationResult::Update(const char digit)
     Update(digit - '0');
 }
 
-int CalibrationResult::Get()
+void CalibrationResult::StoreLineResult()
 {
     if (m_secondDigit == 0) m_secondDigit = m_firstDigit;
-    return m_firstDigit * 10 + m_secondDigit;
+    m_accumulator += m_firstDigit * 10 + m_secondDigit;
+
+    m_firstDigit = 0;
+    m_secondDigit = 0;
 }
 
-CalibrationValueFinder::CalibrationValueFinder(const bool useNames)
-    : m_useNames{useNames}
+int CalibrationValueFinder::CalculateResult(std::ifstream& ifs, const bool useNames)
 {
-    m_compareBuffer.reserve(2);
-    m_backupBuffer.reserve(3);
-}
-
-
-int CalibrationValueFinder::GetResultAndReset(std::stringstream& ss)
-{
-    char c;
-    while (ss >> c)
+    while (std::getline(ifs, m_lineBuffer))
     {
-        if (!ProcessPossibleDigit(c) && m_useNames)
+        for (int i{}; i < m_lineBuffer.size(); i++)
         {
-            SearchForName(c, ss);
+            if (!ProcessPossibleDigit(m_lineBuffer[i]) && useNames)
+            {
+                for (int n{}; n < numDigits; n++)
+                {
+                    if (m_lineBuffer.substr(i).starts_with(namedDigits[n]))
+                    {
+                        m_result.Update(n + 1);
+                    }
+                }
+            }
         }
+
+        m_result.StoreLineResult();
     }
 
-    const int result = m_result.Get();
-
-    //reset state
-    m_compareBuffer.clear();
-    m_backupBuffer.clear();
-    m_result = CalibrationResult{};
-
-    return result;
+    return m_result.Get();
 }
 
 bool CalibrationValueFinder::ProcessPossibleDigit(const char character)
@@ -82,44 +73,15 @@ bool CalibrationValueFinder::ProcessPossibleDigit(const char character)
     if (std::isdigit(character))
     {
         m_result.Update(character);
-        m_compareBuffer.clear();
         return true;
     }
 
     return false;
 }
 
-void CalibrationValueFinder::SearchForName(const char character, std::stringstream& ss)
+
+void CalibrationValueFinder::ProcessNextLine()
 {
-    m_compareBuffer += character;
-    if (m_compareBuffer.size() == 2)
-    {
-        if (digitsByName.contains(m_compareBuffer))
-        {
-            char fromStream;
-            m_backupBuffer.clear();
-
-            const auto [restOfName, digit] = digitsByName.at(m_compareBuffer);
-            for (const auto c : restOfName)
-            {
-                ss >> fromStream;
-                m_backupBuffer += fromStream;
-
-                if (ProcessPossibleDigit(fromStream)) return;
-                if (c != fromStream)
-                {
-                    m_compareBuffer.erase(0, 1);
-                    std::ranges::for_each(
-                        m_backupBuffer,
-                        [&ss](const char backupChar) { ss.putback(backupChar); }
-                    );
-                    return;
-                }
-            }
-            m_result.Update(digit);
-            ss.putback(fromStream);
-        }
-
-        m_compareBuffer.erase(0, 1);
-    }
+    m_lineBuffer.clear();
+    m_result.StoreLineResult();
 }

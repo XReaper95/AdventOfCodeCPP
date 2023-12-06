@@ -1,5 +1,3 @@
-#include <fstream>
-
 #include "SolutionBase.h"
 #include "CalibrationValueFinder.h"
 
@@ -11,36 +9,16 @@ protected:
         return 1;
     }
 
-    int Part1(std::fstream& inputFileStream) override
+    int Part1(std::ifstream& inputFile) override
     {
-        int sum{};
-
-        std::string line;
-        CalibrationValueFinder finder{false};
-
-        while (std::getline(inputFileStream, line))
-        {
-            std::stringstream ss{line};
-            sum += finder.GetResultAndReset(ss);
-        }
-
-        return sum;
+        CalibrationValueFinder finder;
+        return finder.CalculateResult(inputFile, false);
     }
 
-    int Part2(std::fstream& inputFileStream) override
+    int Part2(std::ifstream& inputFile) override
     {
-        int sum{};
-
-        std::string line;
-        CalibrationValueFinder finder{true};
-
-        while (std::getline(inputFileStream, line))
-        {
-            std::stringstream ss{line};
-            sum += finder.GetResultAndReset(ss);
-        }
-
-        return sum;
+        CalibrationValueFinder finder;
+        return finder.CalculateResult(inputFile, true);
     }
 };
 

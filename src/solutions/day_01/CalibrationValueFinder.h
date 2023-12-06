@@ -5,7 +5,7 @@
 #ifndef DIGIT_FINDER_H
 #define DIGIT_FINDER_H
 
-#include <sstream>
+#include <fstream>
 #include <string>
 
 class CalibrationResult
@@ -13,28 +13,26 @@ class CalibrationResult
 public:
     void Update(int digit);
     void Update(char digit);
-    [[nodiscard]] int Get();
+    void StoreLineResult();
+    [[nodiscard]] int Get() const { return m_accumulator; }
 
 private:
     int m_firstDigit{};
     int m_secondDigit{};
+    int m_accumulator{};
 };
 
 class CalibrationValueFinder
 {
 public:
-    explicit CalibrationValueFinder(bool useNames);
-
-    int GetResultAndReset(std::stringstream& ss);
+    int CalculateResult(std::ifstream& ifs, bool useNames);
 
 private:
-    bool m_useNames;
-    std::string m_compareBuffer;
-    std::string m_backupBuffer;
+    std::string m_lineBuffer;
     CalibrationResult m_result;
 
     bool ProcessPossibleDigit(char character);
-    void SearchForName(char character, std::stringstream& ss);
+    void ProcessNextLine();
 };
 
 #endif //DIGIT_FINDER_H
