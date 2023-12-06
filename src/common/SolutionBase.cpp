@@ -27,7 +27,7 @@ void SolutionBase::SolveInput(const int partNum, const SolutionPartFunction part
 
     if (result > 0)
     {
-        fmt::println("Day {}, part {} result: {} completed in {} ms", DayNum(), partNum, result,
+        fmt::println("Day {}, part {} result: {} completed in {:.2f} ms", DayNum(), partNum, result,
                      std::chrono::duration<double, std::milli>(end1 - begin1).count());
     }
     else
