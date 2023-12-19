@@ -8,12 +8,12 @@ protected:
         return 5;
     };
 
-    int Part1(std::ifstream& inputFile) override
+    [[nodiscard]] int Part1(const std::vector<std::string>& inputLines) const override
     {
         return -1;
     }
 
-    int Part2(std::ifstream& inputFile) override
+    [[nodiscard]] int Part2(const std::vector<std::string>& inputLines) const override
     {
         return -1;
     }

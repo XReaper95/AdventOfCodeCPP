@@ -11,12 +11,10 @@ static const char* digitNames[numDigits] = {
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
 };
 
-int CalibrationValueFinder::CalculateResult(std::ifstream& ifs, const bool useNames)
+int CalibrationValueFinder::CalculateResult(const std::vector<std::string>& lines, const bool useNames)
 {
-    std::string lineBuffer;
-    while (std::getline(ifs, lineBuffer))
+    for (std::string_view line : lines)
     {
-        std::string_view line {lineBuffer};
         for (int i{}; i < line.size(); i++)
         {
             if (const char c {line[i]}; std::isdigit(c))

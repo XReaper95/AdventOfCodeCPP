@@ -6,11 +6,12 @@
 #define DIGIT_FINDER_H
 
 #include <fstream>
+#include <vector>
 
 class CalibrationValueFinder
 {
 public:
-    int CalculateResult(std::ifstream& ifs, bool useNames);
+    int CalculateResult(const std::vector<std::string>& lines, bool useNames);
 
 private:
     int m_firstDigit{};

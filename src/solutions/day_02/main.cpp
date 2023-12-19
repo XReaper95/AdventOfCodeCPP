@@ -1,4 +1,3 @@
-#include <numeric>
 #include <unordered_map>
 #include <fmt/core.h>
 
@@ -12,7 +11,7 @@ protected:
         return 2;
     };
 
-    int Part1(std::ifstream& inputFile) override
+    [[nodiscard]] int Part1(const std::vector<std::string>& inputLines) const override
     {
         std::unordered_map<std::string, int> colorLimits{
             {"red", 12}, {"green", 13}, {"blue", 14}
@@ -22,7 +21,7 @@ protected:
         std::string tempBuf;
         int currGame{};
 
-        while (inputFile >> tempBuf)
+        while (inputLines >> tempBuf)
         {
             if (tempBuf == "Game")
             {
@@ -30,13 +29,13 @@ protected:
                 {
                     validGamesSum += currGame;
                 }
-                inputFile >> currGame;
+                inputLines >> currGame;
             }
 
             if (std::isdigit(tempBuf[0]))
             {
                 const int colorCount = std::stoi(tempBuf);
-                inputFile >> tempBuf;
+                inputLines >> tempBuf;
 
                 if (endsInPunctuacion(tempBuf))
                 {
@@ -46,7 +45,7 @@ protected:
                 if (colorCount > colorLimits[tempBuf])
                 {
                     currGame = -1;
-                    skipToNextLine(inputFile);
+                    skipToNextLine(inputLines);
                 }
             }
         }
@@ -56,18 +55,18 @@ protected:
         return validGamesSum;
     }
 
-    int Part2(std::ifstream& inputFile) override
+    [[nodiscard]] int Part2(const std::vector<std::string>& inputLines) const override
     {
         std::string tempBuf;
         int r{}, g{}, b{};
         int powerSum{};
 
-        while (inputFile >> tempBuf)
+        while (inputLines >> tempBuf)
         {
             if (tempBuf == "Game")
             {
-                inputFile >> tempBuf; // skip game number
-                inputFile >> tempBuf; // get first color number
+                inputLines >> tempBuf; // skip game number
+                inputLines >> tempBuf; // get first color number
 
                 powerSum += r * g * b;
                 r = g = b = 0;
@@ -76,7 +75,7 @@ protected:
             if (std::isdigit(tempBuf[0]))
             {
                 const int colorCount = std::stoi(tempBuf);
-                inputFile >> tempBuf;
+                inputLines >> tempBuf;
 
                 if (endsInPunctuacion(tempBuf))
                 {

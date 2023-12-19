@@ -9,16 +9,16 @@ protected:
         return 1;
     }
 
-    int Part1(std::ifstream& inputFile) override
+    [[nodiscard]] int Part1(const std::vector<std::string>& inputLines) const override
     {
         CalibrationValueFinder finder;
-        return finder.CalculateResult(inputFile, false);
+        return finder.CalculateResult(inputLines, false);
     }
 
-    int Part2(std::ifstream& inputFile) override
+    [[nodiscard]] int Part2(const std::vector<std::string>& inputLines) const override
     {
         CalibrationValueFinder finder;
-        return finder.CalculateResult(inputFile, true);
+        return finder.CalculateResult(inputLines, true);
     }
 };
 

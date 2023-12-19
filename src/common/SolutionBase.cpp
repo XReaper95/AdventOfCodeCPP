@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "SolutionBase.h"
 #include "fmt/printf.h"
 
@@ -19,10 +21,10 @@ void SolutionBase::Run(const int example1Result, const int example2Result)
 
 void SolutionBase::SolveInput(const int partNum, const SolutionPartFunction partFunc)
 {
-    std::ifstream inputStream = getFileStream(-1);
+    const std::vector<std::string> inputLines = readFileLines(-1);
 
     const auto begin1 = std::chrono::high_resolution_clock::now();
-    int result = (this->*partFunc)(inputStream);
+    int result = (this->*partFunc)(inputLines);
     const auto end1 = std::chrono::high_resolution_clock::now();
 
     if (result > 0)
@@ -38,9 +40,9 @@ void SolutionBase::SolveInput(const int partNum, const SolutionPartFunction part
 
 void SolutionBase::SolveExample(const int exampleNum, const int expectedResult, const SolutionPartFunction partFunc)
 {
-    std::ifstream exampleStream = getFileStream(exampleNum);
+    const std::vector<std::string> exampleLines = readFileLines(exampleNum);
 
-    if (int result = (this->*partFunc)(exampleStream); result >= 0)
+    if (int result = (this->*partFunc)(exampleLines); result >= 0)
     {
         if (result == expectedResult)
         {
@@ -59,7 +61,7 @@ void SolutionBase::SolveExample(const int exampleNum, const int expectedResult, 
     }
 }
 
-std::ifstream SolutionBase::getFileStream(const int exampleNum)
+std::vector<std::string> SolutionBase::readFileLines(const int exampleNum)
 {
     std::string dayStr = std::to_string(DayNum());
 
@@ -87,5 +89,11 @@ std::ifstream SolutionBase::getFileStream(const int exampleNum)
         std::exit(1);
     }
 
-    return std::ifstream{inputPath};
+    std::ifstream ifs {inputPath};
+    std::vector<std::string> lines;
+    std::string line;
+    while(std::getline( ifs, line ))
+        lines.push_back(std::move(line));
+
+    return lines;
 }
