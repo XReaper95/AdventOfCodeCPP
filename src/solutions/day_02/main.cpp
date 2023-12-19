@@ -21,84 +21,80 @@ protected:
         std::string tempBuf;
         int currGame{};
 
-        while (inputLines >> tempBuf)
+        for (auto& line : inputLines)
         {
-            if (tempBuf == "Game")
+            bool validGame {true};
+            std::stringstream ss {line};
+            ss >> tempBuf; // "Game" word
+            ss >> currGame;
+
+            while (ss >> tempBuf)
             {
-                if (currGame > 0)
+                if (std::isdigit(tempBuf[0]))
                 {
-                    validGamesSum += currGame;
+                    const int colorCount = std::stoi(tempBuf);
+                    ss >> tempBuf; // get color
+
+                    if (endsInPunctuacion(tempBuf))
+                    {
+                        tempBuf.pop_back();
+                    }
+
+                    if (colorCount > colorLimits[tempBuf])
+                    {
+                        validGame = false;
+                        break;
+                    }
                 }
-                inputLines >> currGame;
             }
 
-            if (std::isdigit(tempBuf[0]))
-            {
-                const int colorCount = std::stoi(tempBuf);
-                inputLines >> tempBuf;
-
-                if (endsInPunctuacion(tempBuf))
-                {
-                    tempBuf.pop_back();
-                }
-
-                if (colorCount > colorLimits[tempBuf])
-                {
-                    currGame = -1;
-                    skipToNextLine(inputLines);
-                }
-            }
+            if (validGame) validGamesSum += currGame;
         }
-
-        if (currGame > 0) validGamesSum += currGame;
 
         return validGamesSum;
     }
 
     [[nodiscard]] int Part2(const std::vector<std::string>& inputLines) const override
     {
-        std::string tempBuf;
         int r{}, g{}, b{};
+        std::string tempBuf;
         int powerSum{};
+        int currGame{};
 
-        while (inputLines >> tempBuf)
+        for (auto& line : inputLines)
         {
-            if (tempBuf == "Game")
+            std::stringstream ss {line};
+            ss >> tempBuf; // "Game" word
+            ss >> currGame;
+
+            while (ss >> tempBuf)
             {
-                inputLines >> tempBuf; // skip game number
-                inputLines >> tempBuf; // get first color number
-
-                powerSum += r * g * b;
-                r = g = b = 0;
-            }
-
-            if (std::isdigit(tempBuf[0]))
-            {
-                const int colorCount = std::stoi(tempBuf);
-                inputLines >> tempBuf;
-
-                if (endsInPunctuacion(tempBuf))
+                if (std::isdigit(tempBuf[0]))
                 {
-                    tempBuf.pop_back();
-                }
+                    const int colorCount = std::stoi(tempBuf);
+                    ss >> tempBuf;
 
-                if (tempBuf == "red"   && colorCount > r) r = colorCount;
-                if (tempBuf == "green" && colorCount > g) g = colorCount;
-                if (tempBuf == "blue"  && colorCount > b) b = colorCount;
+                    if (endsInPunctuacion(tempBuf))
+                    {
+                        tempBuf.pop_back();
+                    }
+
+                    if (tempBuf == "red"   && colorCount > r) r = colorCount;
+                    if (tempBuf == "green" && colorCount > g) g = colorCount;
+                    if (tempBuf == "blue"  && colorCount > b) b = colorCount;
+                }
             }
+
+            powerSum += r * g * b;
+            r = g = b = 0;
         }
 
-        return powerSum + r * g * b;
+        return powerSum;
     }
 
     static bool endsInPunctuacion(const std::string_view text)
     {
         return text[text.size() - 1] == ',' || text[text.size() - 1] == ';';
-    }
-
-    static void skipToNextLine(std::ifstream& ifs)
-    {
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 };
 

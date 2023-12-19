@@ -8,12 +8,12 @@ protected:
         return 3;
     };
 
-    int Part1(std::ifstream& inputFile) override
+    [[nodiscard]] int Part1(const std::vector<std::string>& inputLines) const override
     {
         return -1;
     }
 
-    int Part2(std::ifstream& inputFile) override
+    [[nodiscard]] int Part2(const std::vector<std::string>& inputLines) const override
     {
         return -1;
     }
@@ -21,6 +21,6 @@ protected:
 
 int main()
 {
-    Day03().Run(4361, 2286);
+    Day03().Run(-1, -1);
 }
 
