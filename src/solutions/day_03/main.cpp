@@ -48,7 +48,7 @@ protected:
 
     [[nodiscard]] int Part2(const std::vector<std::string>& inputLines) const override
     {
-        // only works if all lines are same size, wich they are
+        // only works if all lines are same size, which they are
         const size_t lineLenght = inputLines.size();
         // maps gear position to its two part numbers
         std::unordered_map<int, Gear> gears;
