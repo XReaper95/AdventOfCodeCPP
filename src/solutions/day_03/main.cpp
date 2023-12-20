@@ -129,7 +129,7 @@ private:
     }
 
     static int AdjacentGearPosition(
-        const int index, const int lineIndex, const int lenght, const std::vector<std::string>& inputLines)
+        const int index, const int lineIndex, const size_t length, const std::vector<std::string>& inputLines)
     {
         auto isGear = [](const char c) {return c == '*';};
 
@@ -142,7 +142,7 @@ private:
                     if (const auto line = maybeLine.value(); isGear(line[y]))
                     {
                         // gear position is width * row + col
-                        return lenght * x + y;
+                        return static_cast<int>(length) * x + y;
                     }
                 }
             }
