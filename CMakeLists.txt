@@ -8,8 +8,13 @@ add_subdirectory(libs/fmt-10.1.1) # FMT
 include_directories(INTERFACE libs/fmt-10.1.1/include)
 link_libraries(fmt::fmt-header-only)
 
-# Helper library
-add_library(COMMON_LIB STATIC src/common/SolutionBase.cpp)
+include_directories(INTERFACE libs/boost-1.84.0)  # BOOST
+
+# Common library
+add_library(COMMON_LIB STATIC
+        src/common/SolutionBase.cpp
+        src/common/Utils.h
+)
 include_directories(INTERFACE src/common)
 link_libraries(COMMON_LIB)
 
