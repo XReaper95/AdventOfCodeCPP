@@ -112,14 +112,19 @@ private:
         const MaybeLine& currLine,
         const MaybeLine& nextLine)
     {
-        auto isSymbol = [](const char c) {return !isdigit(c) && c != '.' && c != 0;};
+        auto isSymbol = [](const std::string_view sv, const int idx)
+        {
+            if (idx < 0|| idx >= sv.size()) return false;
+            const char c = sv[idx];
+            return !isdigit(c) && c != '.' && c != 0;
+        };
 
         auto adjacentToSymbol = [&index, &isSymbol](const MaybeLine& maybeLine)
         {
             if (maybeLine.has_value())
             {
                 const auto line = maybeLine.value();
-                return isSymbol(line[index]) || isSymbol(line[index - 1]) || isSymbol(line[index + 1]);
+                return isSymbol(line, index) || isSymbol(line, index - 1) || isSymbol(line, index + 1);
             }
 
             return false;
@@ -131,7 +136,12 @@ private:
     static int AdjacentGearPosition(
         const int index, const int lineIndex, const size_t length, const std::vector<std::string>& inputLines)
     {
-        auto isGear = [](const char c) {return c == '*';};
+        auto isGear = [](const std::string_view sv, const int idx)
+        {
+            if (idx < 0|| idx >= sv.size()) return false;
+            const char c = sv[idx];
+            return c == '*';
+        };
 
         for (int x = lineIndex - 1; x <= lineIndex + 1; ++x)
         {
@@ -139,7 +149,7 @@ private:
             {
                 for (int y = index - 1; y <= index + 1; ++y)
                 {
-                    if (const auto line = maybeLine.value(); isGear(line[y]))
+                    if (const auto line = maybeLine.value(); isGear(line, y))
                     {
                         // gear position is width * row + col
                         return static_cast<int>(length) * x + y;
@@ -153,15 +163,14 @@ private:
 
     static MaybeLine GetLine(const int index, const std::vector<std::string>& lines)
     {
-        if (index < 0|| index > lines.size())
+        if (index < 0|| index >= lines.size())
         {
             return std::nullopt;
         }
 
-        auto line_view = std::string_view{lines[index]};
-        if (line_view.empty())  return std::nullopt;
+        std::string_view line_view {lines[index]};
 
-        return std::optional {line_view};
+        return line_view.empty() ? std::nullopt : std::optional {line_view};
     }
 
     static std::pair<int, int> ExtractNumberAndLastPosition(const int fromIndex, const std::string_view line)
