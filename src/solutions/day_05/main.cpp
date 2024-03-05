@@ -10,6 +10,7 @@ protected:
 
     [[nodiscard]] int Part1(const std::vector<std::string>& inputLines) const override
     {
+
         return -1;
     }
 
@@ -21,6 +22,6 @@ protected:
 
 int main()
 {
-    Day05().Run(-1, -1);
+    Day05().Run(35, -1);
 }
 
